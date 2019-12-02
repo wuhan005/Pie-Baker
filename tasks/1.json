@@ -1,0 +1,21 @@
+{
+  "name": "FirstTask",
+  "progress": {
+    "a": [
+      {
+        "module": "GREET",
+        "param": ["John Wu"]
+      },
+      {
+        "module": "GREET",
+        "param": ["E99p1ant"]
+      }
+    ],
+    "b": [
+      {
+        "module": "GREET",
+        "param": ["大茄子"]
+      }
+    ]
+  }
+}

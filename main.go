@@ -4,9 +4,27 @@ import (
 	"Pie-Baker/modules"
 )
 
-func main(){
-	moduleSrv := new(modules.ModuleService)
-	moduleSrv.Init()
+type PieBaker struct {
+	moduleSrv *modules.ModuleService
+	taskSrv   *taskService
+}
 
-	moduleSrv.Baker.InvokeModuleFunction("GREET")
+var PB *PieBaker
+func main() {
+	pb := new(PieBaker)
+	PB = pb
+	pb.moduleSrv = new(modules.ModuleService)
+	pb.moduleSrv.Init()
+
+
+
+	//moduleSrv.Baker.InvokeModuleFunction("GREET")
+
+	task, err := pb.taskSrv.LoadTaskFile("./tasks/1.json")
+	if err != nil {
+		panic(err)
+	}
+
+	pb.taskSrv.ExecTask(task)
+
 }

@@ -11,7 +11,7 @@ func (m *Module) Greeting(){
 	Baker.CreateModuleFunction("GREET", g.Greet)
 }
 
-func (g *greeting) Greet(){
-	fmt.Println("Hello! Welcome to Pie Baker!")
+func (g *greeting) Greet(name string){
+	fmt.Printf("Hello %s! Welcome to Pie Baker!\n", name)
 }
 
