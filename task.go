@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"reflect"
-	"sync"
 )
 
 type taskService struct {
@@ -18,8 +17,9 @@ type task struct {
 }
 
 type module struct {
-	Name  string        `json:"module"`
-	Param []interface{} `json:"param"`
+	Name    string        `json:"module"`
+	Param   []interface{} `json:"param"`
+	Require bool          `json:"require"`
 }
 
 func (ts *taskService) LoadTaskFile(path string) (*task, error) {
@@ -36,22 +36,42 @@ func (ts *taskService) LoadTaskFile(path string) (*task, error) {
 }
 
 func (ts *taskService) ExecTask(t *task) error {
+	errChan := make(chan error)
+
 	fmt.Printf("Execute [ %s ]\n", t.Name)
 	progresses := reflect.ValueOf(t.Progress).MapKeys()
-	wg := &sync.WaitGroup{}
+	//wg := &sync.WaitGroup{}
+	// task 任务并发执行
 	for _, v := range progresses {
-		wg.Add(1)
+		if len(errChan) >= 1{
+			break
+		}
+		
 		go func(value string) {
-			ts.execProgress(t.Progress[value])
-			wg.Done()
+			err := ts.execProgress(t.Progress[value])
+			// 判断当前 Module 是否出错
+			if err != nil{
+				errChan <- err
+			}
 		}(v.String())
 	}
-	wg.Wait()
+
+	if len(errChan) >= 1{
+		return <- errChan
+	}
 	return nil
 }
 
-func (ts *taskService)execProgress(modules []module)  {
+// 执行单个模块
+func (ts *taskService) execProgress(modules []module) error {
 	for _, mod := range modules {
-		_, _ = PB.moduleSrv.Baker.InvokeModuleFunction(mod.Name, mod.Param...)
+		m := mod
+		_, err := PB.moduleSrv.Baker.InvokeModuleFunction(m.Name, m.Param...)
+
+		// 检测必要模块是否运行成功
+		if m.Require && err != nil{
+			return err
+		}
 	}
+	return nil
 }

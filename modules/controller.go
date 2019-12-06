@@ -5,13 +5,21 @@ import (
 	"reflect"
 )
 
+// 全局的 Baker
 var Baker = new(ModuleBaker)
+
+type Module struct{}
+
+type ModuleBaker struct {
+	functionList map[string]interface{}
+}
 
 type ModuleService struct {
 	Baker *ModuleBaker
 	Mod   *Module
 }
 
+// 初始化所有注册的模块
 func (m *ModuleService) Init() {
 	m.Baker = Baker
 	m.Baker.functionList = make(map[string]interface{})
@@ -21,12 +29,6 @@ func (m *ModuleService) Init() {
 	for i := 0; i < mod.NumMethod(); i++ {
 		mod.Method(i).Call([]reflect.Value{})
 	}
-}
-
-type Module struct{}
-
-type ModuleBaker struct {
-	functionList map[string]interface{}
 }
 
 func (m *ModuleBaker) CreateModuleFunction(name string, function interface{}) {

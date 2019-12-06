@@ -13,12 +13,7 @@ var PB *PieBaker
 func main() {
 	pb := new(PieBaker)
 	PB = pb
-	pb.moduleSrv = new(modules.ModuleService)
-	pb.moduleSrv.Init()
-
-
-
-	//moduleSrv.Baker.InvokeModuleFunction("GREET")
+	pb.init()
 
 	task, err := pb.taskSrv.LoadTaskFile("./tasks/1.json")
 	if err != nil {
@@ -26,5 +21,4 @@ func main() {
 	}
 
 	pb.taskSrv.ExecTask(task)
-
 }

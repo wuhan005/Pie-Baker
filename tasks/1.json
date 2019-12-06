@@ -4,17 +4,20 @@
     "a": [
       {
         "module": "GREET",
-        "param": ["John Wu"]
+        "param": ["John Wu", 1],
+        "require": false
       },
       {
         "module": "GREET",
-        "param": ["E99p1ant"]
+        "param": ["E99p1ant"],
+        "require": true
       }
     ],
     "b": [
       {
         "module": "GREET",
-        "param": ["大茄子"]
+        "param": ["大茄子"],
+        "require": false
       }
     ]
   }
