@@ -13,12 +13,6 @@ var PB *PieBaker
 func main() {
 	pb := new(PieBaker)
 	PB = pb
-	pb.init()
+	pb.Init()
 
-	task, err := pb.taskSrv.LoadTaskFile("./tasks/1.json")
-	if err != nil {
-		panic(err)
-	}
-
-	pb.taskSrv.ExecTask(task)
 }
