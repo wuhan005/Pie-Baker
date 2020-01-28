@@ -2,6 +2,7 @@ package modules
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"reflect"
 )
@@ -57,13 +58,15 @@ func (m *ModuleBaker) invokeFunction(f interface{}, params []reflect.Value) ([]r
 	funcParamNum := funcType.NumIn()
 	inParamNum := len(params)
 	if inParamNum != funcParamNum {
-		return nil, errors.New("params number error, expect")
+		return nil, errors.New(fmt.Sprintf("Params number error. Expect %d, got %d.", funcParamNum, inParamNum))
 	}
 
 	realParams := make([]reflect.Value, inParamNum)
 	for index, param := range params {
-		if funcType.In(index) != param.Type() {
-			return nil, errors.New("params type error")
+		funcParamType := funcType.In(index)
+		inParamType := param.Type()
+		if funcParamType != inParamType {
+			return nil, errors.New(fmt.Sprintf("Params type error. Expect %s, got %s.", funcParamType, inParamType))
 		}
 		realParams[index] = param
 	}

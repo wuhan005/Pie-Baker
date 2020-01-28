@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"reflect"
@@ -72,7 +71,7 @@ func (ts *taskService) LoadTaskFile(path string) (*task, error) {
 func (ts *taskService) ExecTask(t *task) error {
 	errChan := make(chan error)
 
-	fmt.Printf("Execute [ %s ]\n", t.Name)
+	log.Printf("Execute task [ %s ]\n", t.Name)
 	progresses := reflect.ValueOf(t.Progress).MapKeys()
 
 	// 并发执行所有 Progress
