@@ -11,6 +11,7 @@ func (m *Module) Variable() {
 	v.data = make(map[string]interface{})
 	Baker.CreateModuleFunction("SET_VAR", v.SetVar)
 	Baker.CreateModuleFunction("GET_VAR", v.GetVar)
+	Baker.CreateModuleFunction("GET_VALUE", v.GetValue)
 }
 
 func (v *variable) SetVar(name string, value interface{}) interface{} {
@@ -20,10 +21,14 @@ func (v *variable) SetVar(name string, value interface{}) interface{} {
 
 func (v *variable) GetVar(name string) interface{} {
 	value, ok := v.data[name]
-	if ok{
+	if ok {
 		return value
-	}else{
+	} else {
 		log.Printf("Try to get undefined variable: %s\n", name)
 		return nil
 	}
+}
+
+func (v *variable) GetValue(value interface{}) interface{} {
+	return value
 }

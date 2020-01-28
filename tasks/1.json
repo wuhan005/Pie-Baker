@@ -4,7 +4,7 @@
     "a": [
       {
         "module": "SET_VAR",
-        "param": ["i", 123123],
+        "param": ["i", "12312"],
         "require": false
       },
       {
