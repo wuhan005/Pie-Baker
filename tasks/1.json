@@ -4,7 +4,12 @@
     "a": [
       {
         "module": "GREET",
-        "param": [1],
+        "param": ["aaa", "vvv"],
+        "require": false
+      },
+      {
+        "module": "HELLO_WORLD",
+        "param": ["aaa", "vvv"],
         "require": false
       },
       {

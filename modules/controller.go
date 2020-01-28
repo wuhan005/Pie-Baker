@@ -30,14 +30,14 @@ func (m *ModuleService) Init() {
 	m.Mod = new(Module)
 	mod := reflect.ValueOf(m.Mod)
 	for i := 0; i < mod.NumMethod(); i++ {
-		mod.Method(i).Call([]reflect.Value{})	// 执行所有 Module 的构造函数
+		mod.Method(i).Call([]reflect.Value{}) // 执行所有 Module 的构造函数
 	}
 	log.Println("Module Service Init")
 }
 
 // 模块内注册函数
 func (m *ModuleBaker) CreateModuleFunction(name string, function interface{}) {
-	if m.functionList[name] != nil{
+	if m.functionList[name] != nil {
 		log.Printf("The function name [%s] existed!\n", name)
 	}
 	m.functionList[name] = function
@@ -58,10 +58,15 @@ func (m *ModuleBaker) invokeFunction(f interface{}, params []reflect.Value) ([]r
 	funcParamNum := funcType.NumIn()
 	inParamNum := len(params)
 	if inParamNum != funcParamNum {
-		return nil, errors.New(fmt.Sprintf("Params number error. Expect %d, got %d.", funcParamNum, inParamNum))
+		if funcParamNum == 0 {
+			// 若函数无入参，则舍去所有参数继续执行
+			params = []reflect.Value{}
+		}else{
+			return nil, errors.New(fmt.Sprintf("Params number error. Expect %d, got %d.", funcParamNum, inParamNum))
+		}
 	}
 
-	realParams := make([]reflect.Value, inParamNum)
+	realParams := make([]reflect.Value, funcParamNum)
 	for index, param := range params {
 		funcParamType := funcType.In(index)
 		inParamType := param.Type()
