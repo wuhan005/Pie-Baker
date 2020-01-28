@@ -4,7 +4,7 @@
     "a": [
       {
         "module": "GREET",
-        "param": ["John Wu", 1],
+        "param": [1],
         "require": false
       },
       {

@@ -13,6 +13,7 @@ type taskService struct {
 	Tasks []*task
 }
 
+// 任务文件数据格式
 type task struct {
 	Name     string              `json:"name"`
 	Progress map[string][]module `json:"progress"`
@@ -25,10 +26,15 @@ type module struct {
 }
 
 func (ts *taskService) Init(){
-	_ = ts.LoadTaskFileList()
-	log.Println("Task Service Init")
+	err := ts.LoadTaskFileList()
+	if err != nil{
+		panic(err)
+	}else{
+		log.Println("Task Service Init")
+	}
 }
 
+// 加载所有任务文件
 func (ts *taskService) LoadTaskFileList() error{
 	ts.Tasks = make([]*task, 0)
 
@@ -46,7 +52,7 @@ func (ts *taskService) LoadTaskFileList() error{
 	return nil
 }
 
-func (ts *taskService) GetTaskFileList() []*task{
+func (ts *taskService) GetTaskList() []*task{
 	return ts.Tasks
 }
 
@@ -68,16 +74,16 @@ func (ts *taskService) ExecTask(t *task) error {
 
 	fmt.Printf("Execute [ %s ]\n", t.Name)
 	progresses := reflect.ValueOf(t.Progress).MapKeys()
-	//wg := &sync.WaitGroup{}
-	// task 任务并发执行
+
+	// 并发执行所有 Progress
 	for _, v := range progresses {
 		if len(errChan) >= 1 {
 			break
 		}
 
-		go func(value string) {
-			err := ts.execProgress(t.Progress[value])
-			// 判断当前 Module 是否出错
+		go func(name string) {
+			err := ts.execProgress(t.Progress[name])
+			// 必要模块且出错
 			if err != nil {
 				errChan <- err
 			}
@@ -92,13 +98,34 @@ func (ts *taskService) ExecTask(t *task) error {
 
 // 执行单个模块
 func (ts *taskService) execProgress(modules []module) error {
-	for _, mod := range modules {
-		m := mod
-		_, err := PB.moduleSrv.Baker.InvokeModuleFunction(m.Name, m.Param...)
+	var tmpData []reflect.Value		// 模块函数返回值存储
 
-		// 检测必要模块是否运行成功
-		if m.Require && err != nil {
-			return err
+	for _, mod := range modules {
+		var backData []reflect.Value
+		var err error
+
+		m := mod
+		if m.Param == nil{
+			// 使用上一模块的返回值
+			backData, err = PB.moduleSrv.Baker.InvokeModuleFunction(m.Name, tmpData)
+		}else{
+			// 将 []interface{} 转换为 []reflect.Value
+			var val []reflect.Value
+			for _, param := range m.Param{
+				val = append(val, reflect.ValueOf(param))
+			}
+			backData, err = PB.moduleSrv.Baker.InvokeModuleFunction(m.Name, val)
+		}
+		// 存储返回值
+		tmpData = backData
+
+		// 检测模块是否运行成功
+		if err != nil{
+			log.Printf("Execute function [ %s ] fail: %s\n", m.Name, err)
+			if m.Require{
+				// 若为必要模块，则返回错误从而不继续往下执行
+				return err
+			}
 		}
 	}
 	return nil

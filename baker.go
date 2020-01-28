@@ -13,6 +13,9 @@ func (pb *PieBaker) Init(){
 	pb.taskSrv = new(taskService)
 	pb.taskSrv.Init()
 
+	list := pb.taskSrv.GetTaskList()
+	pb.taskSrv.ExecTask(list[0])
+
 	// 定时模块初始化
 	pb.cronSrv = new(cronService)
 	pb.cronSrv.Init()

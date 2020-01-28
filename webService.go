@@ -7,6 +7,7 @@ type webService struct {
 }
 
 func (ws *webService) Init() {
+	gin.SetMode(gin.ReleaseMode)
 	ws.router = gin.Default()
 
 	ws.router.Run(":9090")
