@@ -28,6 +28,13 @@
         "param": ["大茄子"],
         "require": false
       }
+    ],
+    "c": [
+      {
+        "module": "HTTP_GET",
+        "param": ["http://localhost:8088/get", {}],
+        "require": false
+      }
     ]
   }
 }
