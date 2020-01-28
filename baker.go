@@ -12,4 +12,13 @@ func (pb *PieBaker) Init(){
 	// 任务初始化
 	pb.taskSrv = new(taskService)
 	pb.taskSrv.Init()
+
+	// 定时模块初始化
+	pb.cronSrv = new(cronService)
+	pb.cronSrv.Init()
+
+	// Web 服务初始化
+	pb.webSrv = new(webService)
+	pb.webSrv.Init()
+
 }

@@ -2,6 +2,7 @@ package modules
 
 import (
 	"errors"
+	"log"
 	"reflect"
 )
 
@@ -29,6 +30,7 @@ func (m *ModuleService) Init() {
 	for i := 0; i < mod.NumMethod(); i++ {
 		mod.Method(i).Call([]reflect.Value{})
 	}
+	log.Println("Module Service Init")
 }
 
 func (m *ModuleBaker) CreateModuleFunction(name string, function interface{}) {

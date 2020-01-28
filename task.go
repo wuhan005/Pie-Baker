@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"reflect"
 )
 
@@ -25,6 +26,7 @@ type module struct {
 
 func (ts *taskService) Init(){
 	_ = ts.LoadTaskFileList()
+	log.Println("Task Service Init")
 }
 
 func (ts *taskService) LoadTaskFileList() error{
