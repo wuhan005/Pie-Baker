@@ -61,7 +61,7 @@ func (m *ModuleBaker) invokeFunction(f interface{}, params []reflect.Value) ([]r
 		if funcParamNum == 0 {
 			// 若函数无入参，则舍去所有参数继续执行
 			params = []reflect.Value{}
-		}else{
+		} else {
 			return nil, errors.New(fmt.Sprintf("Params number error. Expect %d, got %d.", funcParamNum, inParamNum))
 		}
 	}
@@ -70,10 +70,39 @@ func (m *ModuleBaker) invokeFunction(f interface{}, params []reflect.Value) ([]r
 	for index, param := range params {
 		funcParamType := funcType.In(index)
 		inParamType := param.Type()
-		if funcParamType != inParamType {
+
+		if funcParamType == inParamType || funcParamType.String() == "interface {}" {
+			// 如果期望入参为 interface{} 则可以直接接受
+			realParams[index] = param
+		} else if inParamType.String() == "interface {}" {
+			// 如果实际入参为 interface{} 则尝试转换
+			interfaceVal := param.Interface()
+			ok := false
+			var val interface{}
+			switch funcParamType.Kind() {
+				case reflect.Uint:
+					val, ok = interfaceVal.(uint)
+				case reflect.Map:
+					val, ok = interfaceVal.(map[string]interface{})
+				case reflect.String:
+					val, ok = interfaceVal.(string)
+				case reflect.Int:
+					val, ok = interfaceVal.(int)
+				case reflect.Bool:
+					val, ok = interfaceVal.(bool)
+				case reflect.Float64:
+					val, ok = interfaceVal.(float64)
+			}
+
+			if !ok{
+				return nil, errors.New(fmt.Sprintf("Params type error. Expect %s, got %s.", funcParamType, inParamType))
+			}
+			realParams[index] = reflect.ValueOf(val)
+
+		} else {
 			return nil, errors.New(fmt.Sprintf("Params type error. Expect %s, got %s.", funcParamType, inParamType))
 		}
-		realParams[index] = param
+
 	}
 	result := funcInstance.Call(realParams)
 	return result, nil

@@ -3,18 +3,22 @@
   "progress": {
     "a": [
       {
-        "module": "GREET",
-        "param": ["aaa", "vvv"],
-        "require": false
-      },
-      {
-        "module": "HELLO_WORLD",
-        "param": ["aaa", "vvv"],
+        "module": "SET_VAR",
+        "param": ["i", 123123],
         "require": false
       },
       {
         "module": "GREET",
         "param": ["E99p1ant"],
+        "require": true
+      },
+      {
+        "module": "GET_VAR",
+        "param": ["i"],
+        "require": false
+      },
+      {
+        "module": "GREET",
         "require": true
       }
     ],
